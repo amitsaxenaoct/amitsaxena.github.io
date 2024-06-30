@@ -1,0 +1,750 @@
+---
+title: "Saxena_DSC520_Week11-12: 11.3"
+author: "Amit Saxena"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Analysis on NFL Players- Week 8-9
+
+### Introduction:
+
+My son got into football when he started high school, and I started following 
+football too. I’m an Indian and have no idea about this sport, but since my son 
+started playing, I got interested in this sport and am trying to learn as much 
+as possible about it. Since my son and his friends regularly talk about NFL, I 
+thought this would be a great topic and a good opportunity for me to do some 
+research on player profiles. 
+
+### Research questions:
+
+I want to research the data of NFL players and find out the traits which are 
+common to all NFL players. I also want to compare how the players have evolved 
+over the years by making comparisons between retired and active NFL players.
+
+1.	What is the ideal physical profile to become an NFL player?
+2.	Are there more chances of getting into NFL if you’re born in certain months 
+    of the year?
+3.	Does the geographical location matter? Meaning would an individual have a 
+    better chance of getting into NFL, if he’s from a certain city or state?
+4.  Does location matter in terms of the positions of the players? Meaning are 
+    there more players from a certain state playing a particular position?
+5.  Which college produces most NFL players?
+6.	Which position has the tallest players?
+7.  Which position weighs the most in average?
+8.  How would the players look like in 10 years from now in terms of physical 
+    profile?
+
+### Approach:
+
+*	I will clean up the file to remove the blank values and unnecessary data.
+*	I’ll transform and modify the data.
+*	I’ll separate the players by their positions.
+*	Then I’ll summarize the results to find out the averages of the physical 
+  parameters of the players.
+*	I’ll try to use regression and predictions on the data.
+*	I’ll plot the graphs and use scatter plots to see the trend.
+*	Based on the inferences from the summary, plots and graphs I’ll try to draw 
+  conclusions to the questions I have.
+
+### How your approach addresses (fully or partially) the problem:
+
+*	Using my approach, I’ll transform the data.
+*	I’ll try to visualize the patterns of the graphs.
+*	Based on the summarization, graphs and plots I’ll try to see the patterns to 
+  answer the questions I have.
+*	Based on the patterns, I’d try to arrive at some conclusions.
+
+### Data:
+
+I collected the data from NFL’s website as well as Kaggle, which some of the 
+classmates suggested. 
+
+The datasets I have chosen are:
+
+1.	Active Players Profile
+2.	Retired Players Profile
+3.	Player Birth Dates
+4.  Additional Player Data- hand & arm length (additional data collected in last
+    2 weeks)
+
+The links to the sources of data are:
+
+1.	https://www.kaggle.com/datasets/trevyoungquist/2020-nfl-stats-active-and-retired-players
+2.	https://www.nfl.com/players/
+3.  https://nflbirthdays.com/
+
+### Required Packages:
+
+The packages I’m planning to use to begin with are, however as I start working 
+on the project, I might find other packages to be used:
+
+1.  dplyr: For data manipulation to solve the common data manipulations.
+2.  readxl: For reading Excel files into R.
+3.  utils: For utility functions that are useful in a variety of contexts.
+4.  MASS: For performing a variety of statistical analyses, including linear and
+    nonlinear regression, time series analysis etc.
+5.  purrr: For functional programming toolkit for R to work more effectively 
+    with functions and vectors.
+6.  ggplot2: For creating graphics in R.
+7.  readr: To read CSV files.
+8.  Metrics: For metrics for evaluating machine learning models, including 
+    regression models.
+9.  pscl: For fitting and analyzing models for discrete data, such as count data
+    and binary data.
+10. caret: To train and evaluate a wide range of machine learning models.
+
+```{r, include=FALSE}
+
+library(dplyr)
+library(readxl)
+library(utils)
+library(MASS)
+library(purrr)
+library(ggplot2)
+library(readr)
+library(Metrics)
+library(pscl)
+library(caret)
+library(stringr)
+
+```
+
+```{r} 
+
+# Importing the data from the downloaded files-
+
+DS1 <- read_xlsx('/Users/asaxe/Documents/GitHub/DSC520-T303 Statistics for Data Science (2241-1)/DSC520- Final Project/NFLBirthdays_Copy.xlsx')
+DS2 <- read_xlsx('/Users/asaxe/Documents/GitHub/DSC520-T303 Statistics for Data Science (2241-1)/DSC520- Final Project/Active_Player_Basic_Stats_Copy.xlsx')
+DS3 <- read_xlsx('/Users/asaxe/Documents/GitHub/DSC520-T303 Statistics for Data Science (2241-1)/DSC520- Final Project/Retired_Player_Basic_Stats_Copy.xlsx')
+
+# Displaying the data sample-
+nrow(DS1)
+head(DS1, 4)
+nrow(DS2)
+head(DS2, 4)
+nrow(DS3)
+head(DS3, 4)
+
+```
+
+### Plots and Table Needs:
+
+I’m planning to use the following plots and tables, but as I progress, I may 
+need to use some additional plots and tables:
+
+1.	Scatterplot: I'll use it to see the data in a more graphical form to see the 
+    trend over the years. For example how the height of quarterbacks.
+2.	Histogram: I'll use this to see the counts for comparison. For ex. count of 
+    hall of famers by the teams.
+3.	Box Plot: I'll use box plot to see the distribution of a variable for ex. 
+    month of birth of players.
+4.	Line Plot: I'll use line plot to see the relationship between two continuous
+    variables such as height and weight. 
+5.	Bar Plot: I'll use bar plots the relationship between a categorical variable
+    and a continuous variable, such as height against years.
+6.  In terms of tables I'll use data frames, lists and matrices.
+
+
+### Questions for future steps:
+
+Some questions that I may include in future are:
+
+1.	Is there really a pattern in NFL players?
+2.	If there is a pattern then what could be the reason for such a pattern.
+3.	Does the financial background of players is also a factor in them making it 
+    to NFL?
+4.	Are there certain states where NFL is more popular than other states?
+
+Based on the approach and my analysis I may need to find some additional data.
+
+#-----------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------#
+
+##  Analysis on NFL Players- Week 10
+
+###	How to import and clean my data
+
+I imported the data I downloaded for this assignment using 'readxl' package, and 
+diplayed the data last week.
+
+This week I'll clean the data by removing the blank rows. Then I'll remove the 
+values which are not valid, for ex. '--'. 
+For the birthdays, I'll add columns for month and year of the birth to create 
+new dataframes to help in visualization and sorting.
+sort them 
+based on the data type such as position etc.
+
+```{r}
+
+# Filtering out rows with missing data- 
+
+DS_B <- DS1[!is.na(DS1$player),] # Filtered data set with player birthdays
+DS_A <- DS2[!is.na(DS2$Player_Id),] # Filtered data set of active players 
+DS_R <- DS3[!is.na(DS3$Player_Id),] # Filtered data set of retired players 
+
+# Birthday dataset modifications-
+
+# After filtering out the blank rows I noticed rows with '--' values, so filtering
+## those as well in all data sets, just to be sure.
+# Removing the rows which has '--' as the value
+DS_B1 <- DS_B %>% filter(player != "--", position != "--", team != "--", 
+                         birthday != "--") 
+# Selecting the month from the birthday
+DS_B1$birth_month <- substring(DS_B1$birthday, 6,7) 
+# Selecting the year from the birthday
+DS_B1$birth_year <- substring(DS_B1$birthday, 1,4) 
+# Removing administrative positions such as coach, owner, manager etc.-
+DS_B2 <- filter(DS_B1, !grepl('Coach|Team owner|Technical|Manager|Scout|
+                              Supervisor|Official|NFL', position)) 
+
+# Active player dataset modifications-
+
+# Removing the rows which has '--' as the value
+DS_A1 <- DS_A %>% filter(Player != "--", Position != "--", Height != "--", 
+                         Weight != "--", College != "--", Number != "--", 
+                         Current_Team != "--", Experience != "--", Age != "--") 
+DS_A2 <- DS_A1[,-1] # Removing the first column as it's redundant
+# Creating a column for height in inches by splitting the data & converting it to numeric-
+DS_A2$Height_Inches <- (as.numeric(substring(DS_A2$Height, 6, 7)))*12 + 
+  as.numeric(substring(DS_A2$Height, 9, 10))
+
+# Retired player dataset modifications-
+
+# Removing the rows which has '--' as the value
+DS_R1 <- DS_R %>% filter(Full_Name != "--", Position != "--", Height != "--", 
+                         Weight != "--", College != "--") 
+DS_R2 <- DS_R1[,-1] # Removing the first column as it's redundant
+# Creating a column for height in inches by splitting the data & converting it to numeric-
+DS_R2$Height_Inches <- (as.numeric(substring(DS_R2$Height, 6, 7)))*12 + 
+  as.numeric(substring(DS_R2$Height, 9, 10))
+# Converting the format of weight-
+DS_R2$Weight <- as.numeric(DS_R2$Weight)
+
+```
+
+
+###	What does the final data set look like?
+
+```{r}
+# Final dataset for further grouping and sorting-
+head(DS_B2, 10) # Player birthday dataset
+head(DS_A2, 10) # Active player dataset
+head(DS_R2, 10) # Retired player dataset
+
+summary(DS_B2)
+summary(DS_A2)
+summary(DS_R2)
+
+```
+
+###	Questions for future steps.
+
+After I have the clean datasets to analyze, the questions for future steps would 
+be-
+1. How to club, summarize and visualize data to help get me the answers to my 
+  questions.
+2. How to best interpret the data, summary and visualization for better 
+  understanding.
+3. Is there some data missing due to which I might not get answers to some of 
+  my questions.
+
+
+###	What information is not self-evident?
+
+From the raw data none of the information seems self evident to me. To get any 
+information from the data we'll have to club, sort, summarize and visualize them.
+
+###	What are different ways you could look at this data?
+
+There are multiple ways to look at the data. We can look at it from the positions
+and try to find the average height and weight of the players. 
+We can also look at it by grouping the players by the colleges and try to find 
+patterns there.
+We can also look at it by the months the players are born in and try to find 
+similarities there.
+
+Visualizing birthday data by creating histograms-
+```{r}
+
+DS_B2 <- transform(DS_B2, birth_month = as.numeric(birth_month), 
+                   birth_year = as.numeric(birth_year))
+str(DS_B2)
+
+par(mfrow = c(1,2))
+hist(DS_B2$birth_month, xlim=c(1,12), ylim=c(0,150) , 
+     main = "Players by Months (01-12)", xlab = "Months")
+hist(DS_B2$birth_year,xlim=c(1890,2010),ylim=c(0,400) , 
+     main = "Players by Decades", xlab = "Years(1880-2010)")
+summary(DS_B2)
+
+```
+Visualizing and comparing Active and Retired player data by creating histograms, 
+scatterplots and box plots-
+```{r}
+# Creating histograms-
+par(mfrow = c(2,2),mar=c(6,3,2,1))
+hist(DS_A2$Height_Inches, xlim=c(60,84), ylim=c(0,500) , 
+     main = "Active Players by Height", xlab = "Height in Inches")
+hist(DS_R2$Height_Inches, xlim=c(60,84), ylim=c(0,12500) , 
+     main = "Retired Players by Height", xlab = "Height in Inches")
+hist(DS_A2$Weight, xlim=c(150,400), ylim=c(0,500) , 
+     main = "Active Players by Weight", xlab = "Height in Inches")
+hist(DS_R2$Weight, xlim=c(150,400), ylim=c(0,10000) , 
+     main = "Retired Players by Weight", xlab = "Height in Inches")
+
+# Creating box plots-
+par(mfrow = c(1,2),mar=c(6,3,2,1))
+boxplot(Height_Inches ~ Weight, data = DS_A2, main="Active Players")
+boxplot(Height_Inches ~ Weight, data = DS_R2, main="Retired Players")
+
+#Creating scatterplots for weight and height of active and retired players-
+par(mfrow = c(1,2))
+attach(DS_A2)
+plot(Weight, Height_Inches, main="Active Players",
+   xlab="Weight ", ylab="Height", pch=19)
+
+attach(DS_R2)
+plot(Weight, Height_Inches, main="Retired Players",
+   xlab="Weight ", ylab="Height", pch=19)
+
+```
+
+###	How do you plan to slice and dice the data?
+
+- For next week, I'll focus more into position wise analysis of data, and try to 
+get more insights into it.
+
+###	How could you summarize your data to answer key questions?
+
+- Right now, I don't think I can answer all questions but some of the trends are 
+visible in the plots.
+
+1.	What is the ideal physical profile to become an NFL player?
+
+Ans.    I think it'd be better to answer this question next week when I have split 
+        and analyzed the data by positions. Comparing an Offensive Lineman
+        to a Wide Receiver doesn't seem fair.
+
+2.	Are there more chances of getting into NFL if you’re born in certain months 
+    of the year?
+
+Ans. As per the data I have, January seems to be the month with most NFL players.
+
+3.	Does the geographical location matter? Meaning would an individual have a 
+    better chance of getting into NFL, if he’s from a certain city or state?
+
+Ans. I need to have more data to accurately reflect the players location, instead
+    of using the college.
+    
+4.  Does location matter in terms of the positions of the players? Meaning are 
+    there more players from a certain state playing a particular position?
+
+Ans. I'll have an answer to this if I can find out more data on loaction.
+
+5.  Which college produces most NFL players?
+
+Ans. I haven't arrived at this answer yet, as the no. of colleges is large. I'll
+    need to think how to solve this problem.
+
+6.	Which position has the tallest players?
+
+Ans. I plan to analyze position specific data next week.
+
+7.  Which position weighs the most in average?
+
+Ans. I plan to analyze position specific data next week.
+
+8.  How would the players look like in 10 years from now in terms of physical 
+    profile?
+
+Ans. I'm planning to create a dataframe to create a model and predict the height
+    and weight of the future players.
+
+#### Birthday Data results-
+- It's evident from the month based histogram that a disproportionate no. of 
+players are born in January.
+- I'll need to explore more to find the reson behind that, as currently I don't
+have the data to analyze that.
+- The year based histogram shows that most of the players were born in 1990-2000,
+but that may only be due to the data we have, and I don't read too much into it.
+
+#### Active and Retired Player Data results- 
+- The median and mean weight of active players is much higher than the retired
+players, which means the size of players have increased over the years.
+However, next week I'll explore the position specific weight distribution to 
+check if this increase is in general or skewed towards certain positions.
+Below is a summary of weight side by side-
+
+**Weight- Active**
+<br>  Min.   :160.0
+<br>  1st Qu.:205.0
+<br>  Median :235.0
+<br>  Mean   :244.4
+<br>  3rd Qu.:287.0
+<br>  Max.   :380.0
+
+**Weight- Retired**
+<br>  Min.   : 119.0
+<br>  1st Qu.:195.0
+<br>  Median :220.0
+<br>  Mean   :228.0
+<br>  3rd Qu.:252.0
+<br>  Max.   :388.0
+  
+- The median height of active and retired players is same, but the mean height 
+is slightly more for active players. Again, I'll explore this data more by 
+position to see the details.
+Below is a summary of height in inches side by side-
+  
+**Height_Inches- Active**
+<br>Min.   :66.00
+<br>1st Qu.:73.00
+<br>Median :74.00
+<br>Mean   :74.21
+<br>3rd Qu.:76.00
+<br>Max.   :81.00
+
+**Height_Inches- Retired**
+<br>Min.   :61.00
+<br>1st Qu.:73.00
+<br>Median :74.00
+<br>Mean   :73.58
+<br>3rd Qu.:75.00
+<br>Max.   :85.00
+
+###	What types of plots and tables will help you to illustrate the findings to 
+### your questions?
+
+- I will try to use pie chart for percentage distribution but I'll need to work 
+more on data frames to be able to achieve that.
+
+###	Do you plan on incorporating any machine learning techniques to answer your 
+### research questions? Explain.
+
+- I want to create a model to train, test and predict the height and weight of 
+players 10 and 20 years from now and see how the results come out.
+- I might have to create some dummy data to be able to plug in the predictions,
+but I'll see if I'm actually able to achieve that.
+- I wanted to include a machine learning and prediction model, but I couldn't
+think of a way to incorporate it in my project.
+- My recommended approach for machine learning would be to analyze the increase 
+in the average weight and average height of the players by position and year of 
+birth, and build a prediction model to forecast what the average weight and 
+average height of the players be in 10 years time.
+- Another approach could be to analyze the count of players from different states, 
+and see the trend. By studying this trend for the available data, I'd like to 
+forecast the estimated percentage of players from each state in 10 years and 20 
+years.
+
+###	Questions for future steps.
+
+- I need to research why most of the players are born in January.
+- I need to research and visualize the data specific to hall of famers more.
+- I need to find a way to find the data regarding the location of the players. 
+- I initially thought I could get that from the college, but that is not what I
+initially planned to find out. So I'll try to find that data or try to extract 
+it from NFL.com.
+
+#-----------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------#
+
+##  Analysis on NFL Players- Week 11-12
+
+###	Introduction
+
+I wanted to research the data of NFL players and find out the traits which are 
+common to all NFL players. I also wanted to compare how the players have evolved 
+over the years by making comparisons between retired and active NFL players.
+
+As part of the analysis of NFL players for the final part of this project, I 
+extracted data from NFL's website to include the length of arms and hands  of 
+the players. 
+
+I'll now clean up, merge and try to slice and dice this new joint dataset to 
+see the trends by the positions of the players.
+
+```{r}
+
+# Importing the new dataset with values of arms and hands of the active players
+# that I extracted from NFL website-
+
+DS4 <- read_xlsx('/Users/asaxe/Documents/GitHub/DSC520-T303 Statistics for Data Science (2241-1)/DSC520- Final Project/Active_Player_Additional_Data.xlsx')
+
+# Displaying the new data-
+nrow(DS4)
+head(DS4, 4)
+
+DS_HA <- DS4[!is.na(DS4$Arms),] # Filtering the data set
+
+# Merging the additional data with the active players data-
+DS_HA1 <- merge(DS_A2, DS_HA, by="Player") 
+nrow(DS_HA1)
+head(DS_HA1)
+
+# Removing columns which are not required
+DS_HA2 <- DS_HA1[ -c(3:4,6:13) ]
+head(DS_HA2)
+
+# Define the position names of the position-
+pos_names = c('C'='Center','CB'='Corner Back','DB'='Defensive Back',
+              'DE'='Defensive End','DT'='Defensive Tackle','FB'='Full Back',
+              'FS'='Free Safety','ILB'='Inside Line Backer','K'='Kicker',
+              'LB'='Line Backer','LS'='Long Snapper','MLB'='Middle Line Backer',
+              'NT'='Nose Tackle','OG'='Offensive Guard','OL'='Offensive Line',
+              'OLB'='Outside Line Backer','OT'='Offensive Tackle','P'='Punter',
+              'QB'='Quarter Back','RB'='Running Back','SAF'='Safety',
+              'SS'='Strong Safety','TE'='Tight End','WR'='Wide Receiver',
+              'G'='Guard','T'='Tackle')
+
+# Add a new column for position names and replace the position abbreviations 
+# with position names-
+DS_HA2$'PositionName' <- DS_HA2$Position
+DS_HA2$PositionName <- str_replace_all(DS_HA2$PositionName, pos_names)
+
+# Summarize data by position names-
+DS_HA2 %>% group_by(PositionName) %>% summarize_all(mean)
+
+DS_HA3 <- DS_HA2 %>% group_by(PositionName) %>% summarize_all(mean)
+DS_HA4 <- DS_HA3[-c(2:4)]
+
+DS_HA4$`Height in Inches` <- as.numeric(DS_HA4$`Height in Inches`)
+DS_HA4$Weight.y <- as.numeric(DS_HA4$Weight.y)
+DS_HA4$Arms <- as.numeric(DS_HA4$Arms)
+DS_HA4$Hands <- as.numeric(DS_HA4$Hands)
+DS_HA4
+
+# Rename column names to better highlight the values-
+colnames(DS_HA4) <- c('PositionName','Mean Height','Mean Weight','Mean Arm Length'
+                      ,'Mean Hand Length')
+print(DS_HA4)
+
+# Create bar graphs for the different statistics against the position-
+barplot(DS_HA4$`Mean Height`,names.arg=DS_HA4$PositionName,ylab="Mean Height", 
+        col= 'skyblue', las=2, border = 0, cex.lab=1, cex.axis=1, font=1,col.axis="black")
+
+barplot(DS_HA4$`Mean Weight`,names.arg=DS_HA4$PositionName,ylab="Mean Weight", 
+        col= 'blue', las=2, border = 0, cex.lab=1, cex.axis=1, font=1,col.axis="black")
+
+barplot(DS_HA4$`Mean Arm Length`,names.arg=DS_HA4$PositionName,ylab="Mean Arm Length", 
+        col= 'lightblue', las=2, border = 0, cex.lab=1, cex.axis=1, font=1,col.axis="black")
+
+barplot(DS_HA4$`Mean Hand Length`,names.arg=DS_HA4$PositionName,ylab="Mean Hand Length", 
+        col= 'lightgreen', las=2, border = 0, cex.lab=1, cex.axis=1, font=1,col.axis="black")
+
+```
+
+```{r}
+# Visualize college representation of the players-
+
+DS_A2_C <- aggregate(Player ~ College, data = DS_A2, function(x) length(x))
+DS_A2_C1 <- DS_A2_C[order(DS_A2_C$Player, decreasing = TRUE),] 
+head(DS_A2_C1,10)
+
+barplot(DS_A2_C1$Player,names.arg=DS_A2_C1$College,ylab="No. of Players", 
+        col= 'lightgreen', las=2, border = 0, cex.lab=1, cex.axis=1, font=1,col.axis="black")
+
+```
+
+
+```{r}
+# Analyzing the Hall of Famers by position-
+
+# Expanding the position names (some names are old and not valid anymore)-
+DS_R2$Position <- str_replace_all(DS_R2$Position, pos_names)
+DS_R2_HoF <- aggregate(Hall_Of_Fame ~ Position, data = DS_R2, function(x) length(x))
+DS_R2_HoF1 <- DS_R2_HoF[order(DS_R2_HoF$Hall_Of_Fame, decreasing = TRUE),] 
+head(DS_R2_HoF1,10)
+
+barplot(DS_R2_HoF1$Hall_Of_Fame,names.arg=DS_R2_HoF1$Position,ylab="No. of Hall of Famers", 
+        col= 'lightgreen', las=2, border = 0, cex.lab=1, cex.axis=1, font=1,col.axis="black")
+
+# Analyzing by College-
+DS_R2_HoF_C <- aggregate(Hall_Of_Fame ~ College, data = DS_R2, function(x) length(x))
+DS_R2_HoF_C1 <- DS_R2_HoF_C[order(DS_R2_HoF_C$Hall_Of_Fame, decreasing = TRUE),] 
+head(DS_R2_HoF_C1,10)
+
+#barplot(DS_R2_HoF_C1$Hall_Of_Fame,names.arg=DS_R2_HoF_C1$College,ylab="No. of Hall of Famers by College", 
+#        col= 'lightblue', las=2, border = 0, cex.lab=1, cex.axis=1, font=1,col.axis="black")
+
+```
+
+###	The problem statement you addressed
+
+- I started with a set of questions that I wanted to answer. 
+- I answered some of them based on the analysis I did in week 10. However, there 
+were several questions to which I had no answer and that needed additional 
+analysis, which I didn't last and this week. 
+- I have now found answers to almost all questions that I wanted to answer.
+
+Below are some questions that I couldn't answer till last week, and attempeted
+to answer this week based on additional data and analysis-
+
+1. I wanted to research why most of the players are born in January.
+
+2. I wanted to research and visualize the data specific to hall of famers more.
+
+3. I wanted to find a way to find the data regarding the location of the players
+
+4.  Which college produces most NFL players?
+
+5.	Which position has the tallest players?
+
+6.  Which position weighs the most in average?
+
+###	How you addressed this problem statement
+
+The past two weeks I carried out additional analysis based on the position of the
+players, which gave me answers to my remaining questions. I also had to extract
+additional data from NFL website to compare players.
+
+I also did additional analysis on the hall of fame data for the retired players.
+
+Here's the answers to the questions I couldn't answer in week 10-
+
+1. I wanted to research why most of the players are born in January.
+
+Ans 1. This to the best of my understanding is due to the cutoff being late in the 
+    year for school admissions in US. Due to this the kids born in January have 
+    a physical advantage over the kids in the same grade but born later in the 
+    year.
+    
+    I believe this advantage carries on year after year and due to this comparative
+    advantage more kids born in January tend to be selected for NFL.
+
+2. I wanted to research and visualize the data specific to hall of famers more.
+
+Ans 2. As per my data and analysis-
+
+  The top 5 positions for Hall of Fame NFL players are:
+  
+      1. Defensive Back-	3465		
+      2. Wide Receiver-	3025		
+      3. Line Backer-	2953		
+      4. Running Back-	2340		
+      5. Guard-	2038	
+      
+  I was expecting QBs in the top 5 but surprisingly for me they are not even
+  in top 10 in the list.
+    
+  The top 5 Colleges for Hall of Fame NFL players are:
+  
+      1. Notre Dame-	528		
+      2. USC-	501		
+      3. Ohio State-	432		
+      4. Nebraska-	377		
+      5. Penn State-	371	
+      
+  I was expecting colleges from Texas and Florida in this list, but surprisingly
+    there is only 1 Florida college in 7th place.
+      
+3. I wanted to find a way to find the data regarding the location of the players. 
+
+Ans 3. I initially thought I could get that from the college, but that is not 
+      what I initially planned to find out.
+
+Ans 3 (contd.). I couldn't find reliable data for sufficient no. of players to 
+      arrive at any conclusion on this question. 
+    
+4.  Which college produces most NFL players?
+
+Ans 4. Based on the data I collected following are the top 5 colleges
+    represented by active NFL players-
+    
+      1.  Alabama	51		
+      2.	Ohio State	42		
+      3.	LSU	33		
+      4.	Miami (Fla.)	32		
+      5.	Florida	31	
+
+5.	Which position has the tallest players?
+
+Ans 5. As per the data the following are the positions that are tallest on average-
+
+      1.  Offensive Tackle
+      2.  Tight End
+      3.  Offensive Guard
+      4.  Defensive End
+      5.  Nose Tackle
+
+6.  Which position weighs the most in average?
+
+Ans 6. As per the data the following are the positions that weigh most on average-
+
+      1.  Nose Tackle
+      2.  Offensive Tackle
+      3.  Offensive Guard
+      4.  Defensive Tackle
+      5.  Center
+
+###	Analysis
+
+- I conducted analysis on 4 datasets that I collected. Those datasets were on active
+ players, retired players, birthday of players and the length of hands ans arms 
+ of the players.
+- I cleaned up the data to remove the blank entries. Then I organized the data so 
+ that it's easier to work with. I organized the columns, renamed them, removed 
+ the ones I didnt need, added columns, renamed the positions, merged dataframes,
+ and restructured the data.
+- I created several bars and graphs to visualize the trends and tried to interpret
+ them to answer some questions.
+- I calculated the means of physical attributes of all active players and retired 
+ players for comparison. Then I broke them into individual positions and then 
+ calculated the means again for better understanding.
+- I found the positions which have the heaviest players and positions which have 
+ the tallest players in football.
+- On retired players data, I segregated the data to find which positions have the 
+ most no. of hall of famers, and which colleges have the most representation in
+ hall of famers. I found some surprising facts there which I mentioned earlier.
+
+###	Implications
+
+- I found some very interesting information which contradicted my assumptions about 
+the players, colleges and the positions, which I think is amazing, and what data 
+science is supposed to do exactly. 
+- I was assuming that a lot of quarterbacks get inducted to Hall of Fame because 
+generally they're the stars of the teams, but that is not the case based on the
+data I saw.
+- I also assumed that colleges from Texas and Florida, being important football states, 
+should have more Hall of Fame inductees, but again that is not true as per the
+data I collected.
+- A lot of times we make some stereotypes in our minds without any factual data, 
+and having data science break those stereotypes is very important, 
+based on the story the data tells.
+
+- Another trend that I noticed is the height of active players doesn't seem to have
+increased over the retired players, but the weight of players definitely seem to 
+have increased.
+
+###	Limitations
+
+- The data I collected may not have been fully upto date and may have some errors 
+in it, which I couldn't verify.
+- I also couldn't find any data to analyze the locations of the players to have an
+understanding of which states have the biggest contribution towards NFL players.
+
+###	Concluding Remarks
+
+- I thoroughly enjoyed working on this project and wish I had more time to further
+analyze the data. I learned a lot of new things in R while working on this project
+and I'm glad I picked the subject which I found interesting.
+- This project also enlightened me on why Data Science is becoming such an important
+area these days. The amount of data we generate can be utilized to understand a 
+lot of things and based on that understanding so many improvements can be carried
+out.
+- I'd like to continue working on this topic and try to find more insights from the
+data.
+- I wanted to include a machine learning and prediction model, but due to lack of
+time I couldn't incorporate it in my project.
+- My recommended approach for machine learning would be:
+
+  1. To analyze the increase in the average weight and average height of the 
+  players by position and year of birth, and build a prediction model to forecast 
+  what the average weight and average height of the players be in 10 years time.
+  
+  2. Another approach could be to analyze the count of players from different states, 
+  and see the trend. By studying this trend for the available data, I'd like to 
+  forecast the estimated percentage of players from each state in 10 years and 20 
+  years.
