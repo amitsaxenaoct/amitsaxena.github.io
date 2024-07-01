@@ -33,4 +33,3 @@ Here's the list of projects collected in this repository-
 14.	Project 10: This is a placeholder for the current course’s 2nd project.
 
 15.	Project 11: This is a placeholder for the current course’s 3rd project.
-![image](https://github.com/amitsaxenaoct/amitsaxenaoct.github.io/assets/135739994/0aac3e41-aa66-4e1c-b6ba-3a6fddf2edb7)
