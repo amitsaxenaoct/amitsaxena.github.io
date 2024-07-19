@@ -33,12 +33,13 @@ Dec, 2009 - Sep, 2015		Team Lead • Accenture
 EDUCATION —
 
 B.E. (Marine)		Marine Engineering & Research Institute, Kolkata, India
+M.S. Data Science  Bellevue University, Nebraska, US
 
 
 KEY SKILLS —
 
 APM
-BNAC
+<br>BNAC
 S/4 HANA OP 2021
 S/4 HANA Cloud 2202
 EAM, IAM
