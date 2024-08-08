@@ -30,6 +30,6 @@ Here's the list of projects collected in this repository-
 
 13.	Project 9- Equipment Failure Prediction: 1st project from this course (DSC680): This project is to predict failures in equipment using the logistic regression method.
 
-14.	Project 10- Air Compressor- Anomaly Prediction: This project is to predict anomalies in machines so that appropriate action could be taken to prevent them.
+14.	Project 10- Air Compressor: Anomaly Prediction: This project is to predict anomalies in machines so that appropriate action could be taken to prevent them.
 
-15.	Project 11: This is a placeholder for the current course’s 3rd project.
+15.	Project 11- Jet Engine RUL Prediction: This project is to predict the remaining useful life of jet engine.
